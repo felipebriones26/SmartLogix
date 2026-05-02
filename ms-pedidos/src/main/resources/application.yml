@@ -1,0 +1,15 @@
+server:
+  port: 8083 # Puerto donde correrá este microservicio
+
+spring:
+  application:
+    name: ms-pedidos
+  datasource:
+    # ¡Aquí usamos el puerto 5434 que vimos en Docker!
+    url: jdbc:postgresql://localhost:5434/db_pedidos 
+    username: postgres
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

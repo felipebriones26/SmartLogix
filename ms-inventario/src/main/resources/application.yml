@@ -1,0 +1,10 @@
+server:
+  port: 8082 # El 8080 es del Gateway, el 8081 es de ms-usuarios, así que este usará el 8082
+
+spring:
+  application:
+    name: ms-inventario
+  data:
+    mongodb:
+      # Nos conectamos al MongoDB que levantaste con tu docker-compose
+      uri: mongodb://localhost:27017/db_inventario

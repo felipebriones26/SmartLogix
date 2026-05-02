@@ -1,0 +1,109 @@
+services:
+  # 1. Base de Datos para ms-usuarios (PostgreSQL) [cite: 412]
+  db-usuarios:
+    image: postgres:15-alpine
+    container_name: db-usuarios
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: db_usuarios
+    ports:
+      - "5432:5432"
+    networks:
+      - smartlogix-network
+
+  # 2. Base de Datos para ms-inventario (PostgreSQL) [cite: 412]
+  db-inventario:
+    image: postgres:15-alpine
+    container_name: db-inventario
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: db_inventario
+    ports:
+      - "5433:5432"
+    networks:
+      - smartlogix-network
+
+  # 3. Base de Datos para ms-pedidos (PostgreSQL) [cite: 412]
+  db-pedidos:
+    image: postgres:15-alpine
+    container_name: db-pedidos
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: db_pedidos
+    ports:
+      - "5434:5432"
+    networks:
+      - smartlogix-network
+
+  # 4. Base de Datos para ms-proveedores (PostgreSQL) [cite: 138]
+  db-proveedores:
+    image: postgres:15-alpine
+    container_name: db-proveedores
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: db_proveedores
+    ports:
+      - "5435:5432"
+    networks:
+      - smartlogix-network
+
+  # 5. Base de Datos para ms-envios (MongoDB) [cite: 274, 412]
+  db-envios:
+    image: mongo:6.0
+    container_name: db-envios
+    ports:
+      - "27017:27017"
+    networks:
+      - smartlogix-network
+
+  # 6. Base de Datos para ms-reportes (MongoDB - CQRS) [cite: 129]
+  db-reportes:
+    image: mongo:6.0
+    container_name: db-reportes
+    ports:
+      - "27018:27017"
+    networks:
+      - smartlogix-network
+
+  # 7. Redis para Caché de Stock y Notificaciones [cite: 223, 235, 412]
+  redis-shared:
+    image: redis:7-alpine
+    container_name: redis-shared
+    ports:
+      - "6379:6379"
+    networks:
+      - smartlogix-network
+
+  # 8. Bus de Eventos: Zookeeper y Kafka (Usando repositorios legacy) [cite: 118, 400]
+  zookeeper:
+    image: bitnamilegacy/zookeeper:latest
+    container_name: zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    ports:
+      - "2181:2181"
+    networks:
+      - smartlogix-network
+
+  kafka:
+    image: bitnamilegacy/kafka:latest
+    container_name: kafka
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - smartlogix-network
+
+networks:
+  smartlogix-network:
+    driver: bridge
